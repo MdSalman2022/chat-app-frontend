@@ -7,8 +7,15 @@ import { AuthContext } from "../../../contexts/AuthProvider/AuthProvider";
 import toast from "react-hot-toast";
 const CreateGroup = () => {
   const { user } = useContext(AuthContext);
-  const { contacts, socket, setActiveChat, setMessages } =
+  const { contacts, socket, setActiveChat, setMessages, groupMembers } =
     useContext(StateContext);
+
+  const groupMemberIds = groupMembers?.map((member) => member._id);
+  const allContacts = contacts?.filter(
+    (contact) => !contact?.isGroup && !groupMemberIds?.includes(contact._id)
+  );
+
+  console.log("allContacts", allContacts);
 
   const [groupName, setGroupName] = useState("");
 
@@ -67,7 +74,7 @@ const CreateGroup = () => {
           <div className="flex flex-col px-3">
             {pageName === 2 ? (
               <div className="flex flex-col gap-2 overflow-y-auto max-h-[250px] p-2 custom-scrollbar">
-                {contacts?.map((contact) => (
+                {allContacts?.map((contact) => (
                   <div
                     key={contact._id}
                     className={`flex items-center gap-2 p-2 px-3 rounded-lg cursor-pointer ${

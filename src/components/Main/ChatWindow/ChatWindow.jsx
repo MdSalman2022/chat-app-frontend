@@ -66,6 +66,17 @@ function ChatWindow({ messages, sendMessage, recipient, activeChat }) {
   console.log("user chat", user);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    const formattedTime = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+
+    return formattedTime;
+  };
+
   return (
     <div className="h-screen flex flex-col bg-[#0e1621] text-white w-full">
       <AddMemberModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />
@@ -92,22 +103,36 @@ function ChatWindow({ messages, sendMessage, recipient, activeChat }) {
                 message?.sender === user?._id ? "justify-end" : "justify-start"
               }`}
             >
-              <div
-                className={`p-2 rounded-lg min-w-28 max-w-xs ${
-                  message?.sender === user?._id
-                    ? "bg-[#2b5278] text-white"
-                    : "bg-[#182533] text-white"
-                }`}
-                style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
-              >
-                <strong className="block mb-1">
-                  {message?.sender === user?._id
-                    ? "Me"
-                    : groupMembers?.find(
-                        (member) => member._id === message.sender
-                      )?.username}
-                </strong>
-                {message.content}
+              <div className="flex flex-col">
+                <p
+                  className={`flex text-xs ${
+                    message?.sender === user?._id
+                      ? "justify-end"
+                      : "justify-start"
+                  }`}
+                >
+                  {formatTime(message?.timestamp)}
+                </p>
+                <div
+                  className={`p-2 rounded-lg min-w-28 max-w-xs ${
+                    message?.sender === user?._id
+                      ? "bg-[#2b5278] text-white"
+                      : "bg-[#182533] text-white"
+                  }`}
+                  style={{
+                    wordBreak: "break-word",
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  <strong className="block mb-1">
+                    {message?.sender === user?._id
+                      ? "Me"
+                      : groupMembers?.find(
+                          (member) => member._id === message.sender
+                        )?.username}
+                  </strong>
+                  {message.content}
+                </div>
               </div>
             </div>
           ))}

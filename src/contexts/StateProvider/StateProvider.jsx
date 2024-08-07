@@ -3,7 +3,13 @@ import { AuthContext } from "../AuthProvider/AuthProvider";
 import { v4 as uuidv4 } from "uuid";
 
 import io from "socket.io-client";
-const socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
+import toast from "react-hot-toast";
+// const socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
+//   withCredentials: true,
+// });
+const BACKEND_URL = `${import.meta.env.VITE_SERVER_URL}`; // Use your public IP here
+
+const socket = io(BACKEND_URL, {
   withCredentials: true,
 });
 export const StateContext = createContext();
@@ -27,6 +33,7 @@ const StateProvider = ({ children }) => {
   const [messageIds, setMessageIds] = useState(new Set());
 
   console.log("messageIds", messageIds);
+  console.log("socket", socket);
 
   useEffect(() => {
     if (user) {
@@ -67,20 +74,46 @@ const StateProvider = ({ children }) => {
           });
         } else {
           console.log("Message for different room:", message.roomId);
+          toast.success("New Message!", {
+            id: "new-message",
+          });
+          // followSound.play();
         }
       };
       socket.on("message", handleNewMessage);
       // socket.on("message", (message) => {
       //   console.log("socket message", message);
-      //   if (message.roomId === activeChat?.roomId) {
-      //     setMessages((prevMessages) => [...prevMessages, message]);
-      //   }
+      // if (message.roomId === activeChat?.roomId) {
+      //   setMessages((prevMessages) => [...prevMessages, message]);
+      // }
       // });
       return () => {
         socket.off("message", handleNewMessage);
       };
     }
   }, [user, activeChat]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("new-message", ({ roomId, sender }) => {
+        // Check if the message is for a room the user is not currently viewing
+        if (roomId !== activeChat.roomId) {
+          // Play sound
+          const notificationSound = new Audio("../../assets/notification.wav");
+          notificationSound.play();
+
+          // Show notification
+          toast.success(`New message from ${sender}`);
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("new-message");
+      }
+    };
+  }, [socket, activeChat]);
 
   const fetchMessages = async (roomId) => {
     if (roomId === undefined) return [];

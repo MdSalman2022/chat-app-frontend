@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../contexts/AuthProvider/AuthProvider";
 import toast from "react-hot-toast";
@@ -21,7 +21,9 @@ function Login({ setLogin }) {
       console.log("response", response);
       if (response.success) {
         console.log("Login successful");
-        toast.success("Login successful");
+        toast.success("Login successful", {
+          id: "login",
+        });
       } else {
         setError("apiError", {
           type: "manual",
@@ -33,6 +35,7 @@ function Login({ setLogin }) {
         type: "manual",
         message: "Login failed. Please check your phone number and password.",
       });
+      toast.error("Login failed. Please check your phone number and password.");
     }
   };
 

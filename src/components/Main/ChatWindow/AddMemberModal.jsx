@@ -17,6 +17,8 @@ const AddMemberModal = ({ isOpen, setIsOpen }) => {
     (contact) => !contact?.isGroup && !groupMemberIds?.includes(contact._id)
   );
 
+  // console.log("allContacts", allContacts);
+
   const handleSelectContact = (contactId) => {
     setSelectedContacts((prevSelected) =>
       prevSelected.includes(contactId)

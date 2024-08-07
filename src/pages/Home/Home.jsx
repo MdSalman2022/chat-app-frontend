@@ -96,6 +96,9 @@ const Home = () => {
   const [login, setLogin] = useState(false);
 
   const handleActiveChat = async (contact) => {
+    const followSound = new Audio("../../assets/follow.wav");
+    console.log("followSound", followSound);
+    followSound.play();
     setActiveChat(contact);
     console.log("Joining room:", contact.roomId);
     socket.emit("join", contact.roomId);
@@ -116,6 +119,10 @@ const Home = () => {
       console.error("Error fetching group info:", error);
     }
   };
+
+  // socket.onAny((eventName, ...args) => {
+  //   // ...
+  // });
 
   console.log("groupMembers", groupMembers);
 
